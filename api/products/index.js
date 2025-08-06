@@ -39,16 +39,6 @@ export default async function handler(req, res) {
 
   await connectDB();
 
-  // ✅ Token check after OPTIONS
-  try {
-    const auth = req.headers.authorization || '';
-    const token = auth.split(' ')[1];
-    if (!token) throw new Error('Missing token');
-    jwt.verify(token, JWT_SECRET);
-  } catch (err) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
   try {
     if (req.method === 'GET') {
       const products = await Product.find().sort({ createdAt: -1 });
