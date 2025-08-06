@@ -19,7 +19,6 @@ const connectDB = async () => {
 export default async function handler(req, res) {
   await connectDB();
 
-  // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
