@@ -17,7 +17,7 @@ const connectDB = async () => {
 };
 
 // CORS config
-const allowedOrigins = ['http://localhost:5173', 'https://www.ykhomefoods.com', 'http://ykhomefoods.com'];
+const allowedOrigins = ['http://localhost:5173', 'https://www.ykhomefoods.com', 'http://ykhomefoods.com', 'https://ykhomefoods.com'];
 
 export default async function handler(req, res) {
   const origin = req.headers.origin;
