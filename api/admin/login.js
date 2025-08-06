@@ -5,7 +5,7 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
 const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const allowedOrigins = ['http://localhost:5173', 'https://www.ykhomefoods.com'];
+const allowedOrigins = ['http://localhost:5173', 'https://www.ykhomefoods.com', 'http://ykhomefoods.com'];
 
 module.exports = async function handler(req, res) {
   const origin = req.headers.origin;
