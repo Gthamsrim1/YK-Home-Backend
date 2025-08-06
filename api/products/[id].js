@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
 const Product = require('../../models/Product');
 
+// Connect to MongoDB
 const connectDB = async () => {
-  if (mongoose.connections[0].readyState) return;
+  if (mongoose.connections[0].readyState) {
+    return;
+  }
   try {
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
@@ -13,37 +16,46 @@ const connectDB = async () => {
   }
 };
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   await connectDB();
 
-  // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
+
+  console.log("HI");
 
   const { id } = req.query;
 
   try {
     if (req.method === 'GET') {
       const product = await Product.findById(id);
-      if (!product) return res.status(404).json({ error: 'Product not found' });
-      res.status(200).json(product);
+      if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      res.json(product);
     } else if (req.method === 'PUT') {
-      const updated = await Product.findByIdAndUpdate(id, req.body, { new: true });
-      if (!updated) return res.status(404).json({ error: 'Product not found' });
-      res.status(200).json(updated);
+      const updated = await Product.findByIdAndUpdate(
+        id,
+        req.body,
+        { new: true }
+      );
+      if (!updated) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      res.json(updated);
     } else if (req.method === 'DELETE') {
       const deleted = await Product.findByIdAndDelete(id);
-      if (!deleted) return res.status(404).json({ error: 'Product not found' });
-      res.status(200).json({ message: 'Product deleted' });
+      if (!deleted) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      res.json({ message: 'Product deleted' });
     } else {
       res.status(405).json({ error: 'Method not allowed' });
     }
@@ -51,4 +63,4 @@ module.exports = async function handler(req, res) {
     console.error('API Error:', err);
     res.status(500).json({ error: 'Server error' });
   }
-};
+}
