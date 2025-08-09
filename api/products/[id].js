@@ -16,13 +16,22 @@ const connectDB = async () => {
   }
 };
 
-export default async function handler(req, res) {
-  await connectDB();
+const allowedOrigins = ['http://localhost:5173', 'https://www.ykhomefoods.com', 'http://ykhomefoods.com', 'https://ykhomefoods.com'];
 
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
+export default async function handler(req, res) {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
-  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+  );
+
+  await connectDB();
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
