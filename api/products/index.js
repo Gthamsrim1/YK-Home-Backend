@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
 const Product = require('../../models/Product');
-const JWT_SECRET = process.env.JWT_SECRET;
 
 // Connect to MongoDB
 const connectDB = async () => {
