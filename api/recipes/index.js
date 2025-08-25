@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Recipe = require('../../models/Recipe');
+const Recipe = require('../../models/Recipes');
 
 const connectDB = async () => {
   if (mongoose.connections[0].readyState) return;
