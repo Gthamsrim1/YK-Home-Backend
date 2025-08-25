@@ -1,0 +1,74 @@
+const mongoose = require('mongoose');
+const Recipe = require('../../models/Recipes'); // <-- use your Recipe model
+
+// Connect to MongoDB
+const connectDB = async () => {
+  if (mongoose.connections[0].readyState) {
+    return;
+  }
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  } catch (error) {
+    console.error('DB connection error:', error);
+  }
+};
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://www.ykhomefoods.com',
+  'http://ykhomefoods.com',
+  'https://ykhomefoods.com'
+];
+
+export default async function handler(req, res) {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
+  );
+
+  await connectDB();
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
+  const { id } = req.query;
+
+  try {
+    if (req.method === 'GET') {
+      const recipe = await Recipe.findById(id);
+      if (!recipe) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+      res.json(recipe);
+    } else if (req.method === 'PUT') {
+      const updated = await Recipe.findByIdAndUpdate(id, req.body, { new: true });
+      if (!updated) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+      res.json(updated);
+    } else if (req.method === 'DELETE') {
+      const deleted = await Recipe.findByIdAndDelete(id);
+      if (!deleted) {
+        return res.status(404).json({ error: 'Recipe not found' });
+      }
+      res.json({ message: 'Recipe deleted' });
+    } else {
+      res.status(405).json({ error: 'Method not allowed' });
+    }
+  } catch (err) {
+    console.error('API Error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
